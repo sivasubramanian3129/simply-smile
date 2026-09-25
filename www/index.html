@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simply Smile</title>
+  
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="face-api.min.js"></script>
+
+  <!-- ✅ ADD THIS IMPORT MAP -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="script.js"></script>
+</head>
+
+<body>
+    <div id="floating-emojis-container"></div>
+    <div id="intro">
+        <div id="intro-content-wrapper">
+            <h1 class="title" data-i18n="title">Simply SMILE</h1>
+            <p class="subtitle" data-i18n="subtitle">Smile elongates your life, gives peace.</p>
+        </div>
+        <button id="startBtn" class="btn intro-start-btn" data-i18n="startBtn">🤍 Start 🤍</button>
+    </div>
+    
+    <div id="app" class="hidden">
+        <button id="hardResetBtn" class="restart-btn">🔁</button>
+        
+        <div id="quitPrompt" class="hidden">
+            <div id="quitPrompt-box">
+                <h3>Do you want to quit your smile challenge?</h3>
+                <div class="buttons">
+                    <button id="quitYesBtn" class="btn action-negative">Quit Game</button> 
+                    <button id="quitNoBtn" class="btn action-positive">Try Challenge</button> 
+                </div>
+            </div>
+        </div>
+
+        <div id="internetError" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; display: flex; align-items: center; justify-content: center;">
+            <div class="container-box" style="text-align: center;">
+                <h3 style="color: #D93025; font-size: 2rem; margin-bottom: 10px;">⚠️</h3>
+                <h3 style="color: var(--text-title);">No Internet Connection</h3>
+                <p style="color: var(--text-body); margin-bottom: 20px;">SimplySMILE needs internet to prepare the magic. Please connect to continue!</p>
+                <button id="retryConnectionBtn" class="btn action-positive">I Connected! Retry 🔄</button>
+            </div>
+        </div>
+
+        <div id="interstitialGif" style="display: none; text-align: center; padding: 30px;">
+            <p style="font-size: 1.0rem; color: #28a745; font-weight: bold;">🥳 Challenge Complete! Get Ready for Your Gift! 🎁</p>
+            <img src="images/giftsappear.gif" alt="Gifts Appearing Transition" style="max-width: 100%; height: auto; border-radius: 15px;">
+        </div>
+
+        <div id="gifts1" class="hidden">
+            <h3 id="gift-title">🎁 Choose Your Gift 🎁</h3>
+            <div class="gift-container">
+                <div class="gift" data-phase="1"><img src="images/gift1.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift2.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift3.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift4.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift5.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift6.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift7.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift8.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="1"><img src="images/gift9.png" alt="Gift Box"></div>
+            </div>
+        </div>
+
+        <div id="gifts2" class="hidden">
+            <h3 id="gift-title">🎁 Choose Your Final Gift 🎁</h3>
+            <div class="gift-container">
+                <div class="gift" data-phase="2"><img src="images/gift1.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift2.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift3.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift4.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift5.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift6.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift7.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift8.png" alt="Gift Box"></div>
+                <div class="gift" data-phase="2"><img src="images/gift9.png" alt="Gift Box"></div>
+            </div>
+        </div>
+        
+        <div id="fortune" class="hidden"> 
+            <div id="fortune-box">
+                <div class="emoji-start">😊</div> 
+                <p id="fortuneMessage"></p>
+                <div class="emoji-end">😊</div>
+            </div>
+        </div>
+
+        <div id="final" class="hidden"></div>
+       
+        <div id="dynamicAppContent"></div>
+        
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+            <p>Preparing Smiles... 😊</p>
+        </div>
+        <div id="status" class="status hidden"></div>
+        <div id="motivation" class="status hidden motivation-box"></div>
+        
+    </div> 
+
+   <div id="coach-text"></div>
+
+<script>
+    let currentTargetId = null;
+
+    // 🧹 CLEANUP
+    function cleanupSpotlights() {
+        document.querySelectorAll('.spotlight-arrow').forEach(el => el.remove());
+        const text = document.getElementById('coach-text');
+        if (text) text.style.display = 'none';
+        currentTargetId = null; 
+    }
+
+    // 🛠️ DRAW
+    function showSpotlight(targetId, message, storageKey) {
+	if (showBelow) {
+            arrow.innerHTML = "👆";
+            arrow.style.top = (rect.bottom + 5) + 'px'; // 👈 Tighter gap
+            text.style.top = (rect.bottom + 45) + 'px'; // 👈 Sits closer to the arrow
+        } else {
+            arrow.innerHTML = "👇";
+            arrow.style.top = (rect.top - 45) + 'px'; // 👈 Tighter gap
+            text.style.top = (rect.top - 95) + 'px'; // 👈 Sits closer to the arrow
+        }
+        if (currentTargetId === targetId) return;
+        if (localStorage.getItem(storageKey) === 'true') return;
+
+        const target = document.getElementById(targetId);
+        // Safety: If target is gone, stop.
+        if (!target || target.offsetParent === null || target.getBoundingClientRect().width === 0) return;
+
+        // 🦁 SAFETY: If Quit Prompt is visible, NEVER show arrow
+        const actionsDiv = document.getElementById('actions');
+        if (actionsDiv && !actionsDiv.classList.contains('hidden')) return;
+
+        cleanupSpotlights();
+        currentTargetId = targetId;
+
+        const text = document.getElementById('coach-text');
+        const rect = target.getBoundingClientRect();
+        
+        // Logic: Decide Position
+        const spaceAbove = rect.top;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        let showBelow = spaceBelow > (spaceAbove - 50);
+
+        if (targetId === 'duration-container' || targetId === 'startBtn') showBelow = true;
+
+        const arrow = document.createElement('div');
+        arrow.className = 'spotlight-arrow';
+        const arrowCenter = rect.left + (rect.width / 2) - 25; 
+        arrow.style.left = arrowCenter + 'px';
+        document.body.appendChild(arrow);
+
+        text.innerText = message;
+        text.style.display = 'block';
+        const textCenter = rect.left + (rect.width / 2);
+        text.style.left = textCenter + 'px'; 
+
+        if (showBelow) {
+            arrow.innerHTML = "👆";
+            arrow.style.top = (rect.bottom + 10) + 'px';
+            text.style.top = (rect.bottom + 80) + 'px';
+        } else {
+            arrow.innerHTML = "👇";
+            arrow.style.top = (rect.top - 60) + 'px';
+            text.style.top = (rect.top - 120) + 'px'; 
+        }
+
+        function dismiss() {
+            localStorage.setItem(storageKey, 'true'); 
+            cleanupSpotlights();
+        }
+        document.addEventListener('touchstart', dismiss, { once: true });
+        target.addEventListener('click', dismiss, { once: true });
+    }
+
+    // 🦁 WATCHER
+    const appObserver = new MutationObserver((mutations) => {
+        // Safety Cleanup
+        if (currentTargetId) {
+            const target = document.getElementById(currentTargetId);
+            const actionsDiv = document.getElementById('actions');
+            
+            // If target hidden OR Quit Prompt appeared -> Clean up
+            if (!target || target.offsetParent === null || target.classList.contains('hidden')) {
+                cleanupSpotlights();
+            }
+            if (currentTargetId === 'timer' && actionsDiv && !actionsDiv.classList.contains('hidden')) {
+                cleanupSpotlights();
+            }
+        }
+
+        // 1. Choose Timing Screen
+        const durationGroup = document.getElementById('duration-container');
+        if (durationGroup && !durationGroup.classList.contains('hidden')) {
+             setTimeout(() => showSpotlight('duration-container', "Choose your timing... ⏱️", 'seen_duration_v15'), 100);
+        }
+
+        // 2. Camera/Timer Screen (THE FIX)
+        const videoSection = document.getElementById('videoSection');
+        const actionsDiv = document.getElementById('actions');
+        
+        if (videoSection && videoSection.offsetParent !== null && actionsDiv && actionsDiv.classList.contains('hidden')) {
+            // 🦁 INCREASED DELAY: 2.5 seconds!
+            // This waits for the "Allow Camera" popup to finish on the first run.
+            setTimeout(() => showSpotlight('timer', "Keep smiling! ⏳", 'seen_timer_v15'), 2500);
+        }
+
+        // 3. Gifts Screen
+        const giftsDiv = document.getElementById('gifts1');
+        if (giftsDiv && !giftsDiv.classList.contains('hidden')) {
+             setTimeout(() => showSpotlight('gifts1', "Tap a box! 🎁", 'seen_gift_v15'), 100);
+        }
+    });
+
+    // Start Logic
+    window.addEventListener('load', function() {
+        cleanupSpotlights();
+        setTimeout(() => {
+            showSpotlight('startBtn', "Tap here to start!", 'seen_start_v15');
+        }, 100);
+        
+        appObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
+    });
+</script>
+
+</body>
+</html>

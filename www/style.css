@@ -1,0 +1,594 @@
+/* Define the color palette from the design guide */
+:root {
+  --yellow-bg: #FFD300;
+  --text-title: #000000;      /* Black (Readability) */
+  --text-body: #4A4A4A;        /* Dark Grey (Readability) */
+  --btn-primary: #2A2A6C;     /* Primary Button (Deep Navy/Indigo) */
+  --accent-violet: #4F218E;    /* Deep Violet (Accent) */
+  --accent-teal: #00BFA5;      /* Teal Accenta (Accent) */
+  --container-white: #FFFFFF; /* White (Neutral) */
+  --bg-light-grey: #F0F0F0;    /* Light Grey (Neutral) */
+}
+
+
+/* 🦁 Bouncing Arrow Style */
+.spotlight-arrow {
+    position: absolute;
+    font-size: 28px; /* 👈 Reduced from 50px to be much more subtle */
+    z-index: 10000;
+    color: var(--yellow-bg); 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    animation: bounce 1s infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-15px); }
+}
+
+/* The Text Helper - Updated to be HIDDEN by default */
+#coach-text {
+    position: absolute;
+    color: var(--text-title); /* Clean black text */
+    background-color: var(--container-white); /* 👈 Clean white background instead of black */
+    border: 2px solid var(--yellow-bg); /* 👈 Friendly brand yellow border */
+    padding: 8px 16px; /* 👈 Smaller, compact padding */
+    border-radius: 20px;
+    font-size: 15px; /* 👈 Reduced font size from 18px */
+    font-weight: 700;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10001;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Softer shadow */
+    
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 80%;
+
+    display: none; 
+}
+
+/* --- 1. General Body & Font Setup --- */
+body {
+  background: #F0F0F0;
+  /* CHANGE FONT HERE */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  color: var(--text-body);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* --- 2. Containers (White Boxes) --- */
+/* A reusable style for all pop-up boxes */
+.container-box {
+  background: var(--container-white);
+  border-radius: 12px;
+  padding: 30px 40px;
+  margin: 20px auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove backgrounds from containers and apply the new box style */
+#app-title-frame {
+  background: #FFFFFF; /* White background */
+  border: 2px solid #F0F0F0; /* Sapphire border */
+  border-radius: 12px;
+  padding: 2px 20px; 
+  margin: 0 auto 15px auto; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 290px;
+  background-image: none;
+}
+
+/* --- NEW: UNIFIED PROMPT BOX STYLE (Insert Here) --- */
+#quitPrompt-box {
+    /* Use the white container style from the design guide */
+    background: #FFFFFF;
+
+    /* ADD "smooth corners" */
+    border-radius: 12px; 
+
+    /* Keep existing padding for "perfectly fitted content" */
+    padding: 30px 40px; 
+
+    /* Keep existing layout styles */
+    width: 90%; 
+    max-width: 200px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add shadow from new design */
+
+    /* Remove old image background */
+    background-image: none;
+}
+/* NEW SIMPLE STYLE for the motivation box */
+#motivation {
+  background: #D93025; /* <== Negative Red */
+  color: var(--container-white); /* <== White Font */
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 10px auto;
+  width: 90%;
+  max-width: 444px;
+  font-size: 1.1rem; /* Same font size as status */
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  /* Remove old image/border styles */
+  background-image: none;
+  border: none;
+}
+/* --- 3. Text & Headings --- */
+h3 {
+  color: var(--text-title);
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+}
+
+.title {
+  font-size: 1.2rem; /* <== Smaller */
+  font-weight: 900;
+  color: var(--yellow-bg);
+  margin-bottom: 5px;
+  text-shadow: none;
+}
+
+.subtitle {
+  font-size: 1.0rem; /* <== Smaller */
+  color: var(--text-title);
+  margin-top: 0;
+  text-shadow: none;
+}
+
+/* --- 8. Loader Spinner Style --- */
+
+/* 1. The Container: Covers the whole screen in white */
+#loader {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: #ffffff; 
+  display: flex;
+  flex-direction: column; /* Stacks spinner on top of text */
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* Sit on top of everything */
+}
+
+/* 2. The Spinner: The actual spinning circle */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--bg-light-grey); 
+  border-top-color: var(--yellow-bg); /* Uses your Brand Yellow */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px; /* Space between circle and text */
+}
+
+/* 3. The Text: "Preparing Smiles..." */
+#loader p {
+  font-size: 1.2rem;
+  color: var(--text-title);
+  font-weight: 700;
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.status {
+  /* NEW box styles */
+  background: #28a745; /* <== Positive Green */
+  color: var(--container-white); /* <== White Font */
+  border-radius: 8px;
+  padding: 10px 20px;
+  width: 90%;
+  max-width: 444px; /* <-- FITS THE VIDEO */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  
+  /* Existing styles */
+  margin: 10px auto; /* <-- 'auto' centers the box */
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: block;
+  text-align: center;
+}
+
+/* --- 4. Button Styles (Flat Design) --- */
+.btn {
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+  
+  /* Remove all old backgrounds */
+  background: none;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  background-image: none; /* Ensure no image on hover */
+}
+
+
+/* Positive / Primary Button (Yellow) */
+.action-positive,
+.intro-start-btn {
+  background-color: var(--yellow-bg) !important; /* <== Yellow */
+  color: var(--text-title) !important; /* <== Black text */
+  border: 2px solid var(--text-title) !important; /* <== Black border */
+}
+
+/* Negative / Secondary Button (using Light Grey) */
+.action-negative {
+  background-color: #D93025 !important; /* <== CHANGE (Red) */
+  color: var(--container-white) !important; /* <== CHANGE (White text) */
+  border: none !important;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #333;
+  color: #aaa;
+}
+
+/* --- 5. Specific Screen Layouts --- */
+
+/* Screen 1: Intro */
+
+#intro {
+  display: block;
+}
+
+#intro-content-wrapper {
+  /* Consolidate image properties onto a single line for cleanliness */
+  background: url('images/main_background.jpg') no-repeat center center;
+  background-size: cover;
+
+  /* Box Shape and Dimensions */
+  width: 90%;
+  max-width: 400px;
+  border-radius: 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center;    /* Center children horizontally */
+  justify-content: center; /* Center children vertically (optional, depends on required spacing) */
+  text-align: center;
+
+  /* Retain position: relative; to anchor the absolute children */
+  position: relative; 
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
+
+  /* CRITICAL: Increase top padding to create space for the title text 
+     (e.g., 60px for a two-line title). */
+  /* Top: 60px, Right: 60px, Bottom: 90px, Left: 15px */
+  padding: 10px 30px 65px 5px;
+}
+
+#intro-content-wrapper .title {
+  color: var(--yellow-bg);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+
+  /* CRITICAL CHANGE: Ensure it spans the full usable width. */
+   position: relative; 
+  right: -10px;
+  width: 100%; 
+  text-align: center;
+  
+  /* Optional: Adjust spacing from the graphic if needed */
+  margin-top: 80px;  
+
+  z-index: 10;
+}
+
+/* Subtitle (White Text) alignment from before: */
+#intro-content-wrapper .subtitle {
+  color: var(--text-title);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+
+  /* CRITICAL CHANGE: Ensure it spans the full usable width. */
+  position: relative; 
+  right: -10px; 
+  
+  width: 100%; 
+  text-align: center; 
+  
+  
+  padding: 10px; 
+
+  /* Optional: Add spacing below the title */
+  margin-top: 5px;
+margin-bottom: -40px;  
+
+  z-index: 10; 
+}
+
+/* Screen 3: Challenge */
+#app {
+  max-width: 600px;
+  width: 100%;
+  position: relative; /* <-- ADD THIS */
+}
+
+#videoSection {
+  max-width: 400px;
+  margin: 20px auto 10px auto;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid var(--bg-light-grey); /* Light grey border */
+  border-radius: 12px;
+}
+
+video {
+  width: 100%; 
+  height: auto;
+  border: none;
+  border-radius: 12px; /* <-- CHANGE THIS */
+}
+
+/* Timer */
+#timer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 50;
+  background-color: var(--container-white); /* White background */
+  border: none; /* No border */
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.8rem !important;
+  font-weight: 700;
+  color: var(--text-title); /* Black text */
+}
+
+/* --- 6. Pop-up & Overlay Styles --- */
+
+/* Quit Prompt Overlay */
+#quitPrompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+#quitPrompt-box h3 {
+  color: var(--text-title);
+  font-size: 1.1rem;
+}
+
+/* Fortune Box Overlay */
+/* Fortune Modal Container */
+#fortune {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #FFF59D, #C5E1A5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* The White Card */
+#fortune-box {
+    background: white;
+    width: 85%;            /* Don't fill width */
+    max-width: 400px;      /* Limit maximum width */
+    max-height: 80vh;      /* Don't fill height */
+    padding: 30px;         /* Breathing room inside */
+    border-radius: 20px;   /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-align: center;
+    overflow-y: auto;      /* Scroll if text is too long */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid var(--primary-color); /* Optional border */
+}
+
+/* The Text */
+#fortuneMessage {
+    font-size: 1.1rem;     /* Smaller, readable font */
+    line-height: 1.6;      /* Better spacing between lines */
+    color: #333;
+    font-weight: 500;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+/* Add a visual cue at the bottom */
+#fortune-box::after {
+    content: "(Tap anywhere to continue)";
+    display: block;
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* Style for the starting emoji */
+.emoji-start {
+  text-align: center;
+  margin-bottom: 15px; /* Space between emoji and text */
+}
+
+/* Style for the ending emoji */
+.emoji-end {
+  text-align: center;
+  margin-top: 15px; /* Space between text and emoji */
+}
+
+/* --- Gift Sections --- */
+#gifts1, #gifts2 {
+    max-width: 340px;       /* Match the Question Box width */
+    width: 90%;             /* Fits on small screens */
+    margin: 0 auto;         /* Centered */
+    padding: 15px;
+    background: #FFFFFF; 
+    border-radius: 15px;    
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+#gift-title {
+    font-size: 1.5rem;
+    margin: 0 0 20px 0;
+    color: var(--text-title);
+} /* <--- THIS BRACKET WAS MISSING! */
+
+/* Ensure the grid fits inside */
+.gift-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px;              /* Space between gifts */
+    justify-items: center;
+}
+
+.gift {
+    width: 100%;            /* Fill the grid cell */
+    max-width: 80px;        /* Don't let them get too huge */
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gift img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* --- 7. Utility & Final Touches --- */
+.restart-btn {
+    position: fixed;
+    top: 10px;          /* Moved closer to the top edge (was 15px) */
+    right: 10px;        /* Moved closer to the right edge (was 15px) */
+    z-index: 1000;
+
+    /* Reduced Size */
+    width: 30px;        /* Reduced from 40px */
+    height: 30px;       /* Reduced from 40px */
+    
+    padding: 0;
+    font-size: 0.7rem;  /* Smaller icon/text size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: rgba(255, 255, 255, 0.8); /* Slightly transparent to be less intrusive */
+    color: #333;        /* Dark grey text */
+    
+    border: none;
+    border-radius: 8px; /* Slightly smaller radius */
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+}
+
+/* --- 8. Floating Emoji Background --- */
+#floating-emojis-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1; /* Puts it behind all content */
+}
+
+.emoji-float {
+  position: absolute;
+  bottom: -50px; /* Start off-screen */
+  font-size: 2rem;
+  opacity: 0;
+  animation: floatUp 15s linear infinite;
+}
+
+/* Animation keyframes */
+@keyframes floatUp {
+  0% {
+    bottom: -50px;
+    opacity: 0;
+    transform: translateX(0);
+  }
+  10% {
+    opacity: 0.7; /* Fade in */
+  }
+  90% {
+    opacity: 0.7; /* Stay visible */
+  }
+  100% {
+    bottom: 105%; /* Float to top and off-screen */
+    opacity: 0;
+    transform: translateX(20px); /* Slight drift */
+  }
+}
+
+/* --- 9. Question Box Style --- */
+.question-box {
+  background: #F0F0F0; /* <== CHANGE */
+  color: var(--text-body); /* <== CHANGE (Dark Grey font) */
+  border-radius: 12px; /* Matches the other boxes */
+  padding: 25px 30px; /* More breathing room */
+  width: 90%;
+  max-width: 400px; /* Align with other elements */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 10px auto 20px auto; /* Add margin-bottom */
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
