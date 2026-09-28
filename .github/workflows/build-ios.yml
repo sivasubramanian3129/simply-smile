@@ -1,4 +1,4 @@
-﻿name: Build iOS App
+name: Build iOS App
 
 on:
   push:
@@ -17,17 +17,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies & generate iOS platform
+      - name: Install, Sync, and Install Pods
         run: |
           npm install
           mkdir -p www
           echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
-          rm -rf ios
-          npx cap add ios
           npx cap sync ios
-
-      - name: Install CocoaPods
-        run: |
           cd ios/App
           pod install
 
