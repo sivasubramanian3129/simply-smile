@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies & sync Capacitor
         run: |
           npm install
+          npx cap add ios || true
           npx cap sync ios
 
       - name: Install CocoaPods
