@@ -17,17 +17,18 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install, Sync, and Install Pods
+      - name: Install dependencies & Generate iOS Platform
         run: |
           npm install
           mkdir -p www
           echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
+          rm -rf ios
+          npx cap add ios
           npx cap sync ios
+
+      - name: Install CocoaPods
+        run: |
           cd ios/App
-          # If Podfile is missing, use the correct Capacitor 8 relative path
-          if [ ! -f "Podfile" ]; then
-            printf "require_relative '../../node_modules/@capacitor/ios/capacitor-cordova-ios-plugins/cordova_plugins'\nrequire_relative '../../node_modules/@capacitor/ios/scripts/pods'\n\nplatform :ios, '13.0'\nuse_frameworks!\n\ntarget 'App' do\n  capacitor_pods\nend\n" > Podfile
-          fi
           pod install
 
       - name: Build iOS Simulator App (Test Build)
