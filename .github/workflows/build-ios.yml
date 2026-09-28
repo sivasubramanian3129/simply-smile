@@ -17,9 +17,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies & sync Capacitor
+      - name: Install dependencies & generate iOS platform
         run: |
-          npm install 
+          npm install
+          mkdir -p www
+          echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
+          npx cap add ios || true
           npx cap sync ios
 
       - name: Install CocoaPods
