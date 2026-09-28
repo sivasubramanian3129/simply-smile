@@ -23,7 +23,7 @@ jobs:
           mkdir -p www
           echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
           rm -rf ios
-          npx cap add ios
+          npx cap add ios --packagemanager CocoaPods
           npx cap sync ios
 
       - name: Install CocoaPods
