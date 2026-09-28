@@ -23,9 +23,21 @@ jobs:
           mkdir -p www
           echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
           npx cap sync ios
+          # Ensure we are in the right folder and check for Podfile
           cd ios/App
+          if [ ! -f "Podfile" ]; then
+            echo "Podfile missing, generating default iOS pod configuration..."
+            # If Capacitor didn't generate one, we create a standard Capacitor Podfile
+            cat << 'EOF' > Podfile
+            platform :ios, '13.0'
+            use_frameworks!
+            target 'App' do
+              capacitor_pods
+            end
+            EOF
+          fi
           pod install
-
+          
       - name: Build iOS Simulator App (Test Build)
         run: |
           xcodebuild -workspace ios/App/App.xcworkspace \
