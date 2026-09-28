@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-latest
     name: Build iOS package
     steps:
       - name: Checkout source code
