@@ -25,7 +25,7 @@ jobs:
           npx cap sync ios
           cd ios/App
           if [ ! -f "Podfile" ]; then
-            printf "platform :ios, '13.0'\nuse_frameworks!\ntarget 'App' do\n  capacitor_pods\nend\n" > Podfile
+            printf "require_relative '../../node_modules/@capacitor/ios/scripts/pods'\n\nplatform :ios, '13.0'\nuse_frameworks!\n\ntarget 'App' do\n  capacitor_pods\nend\n" > Podfile
           fi
           pod install
 
