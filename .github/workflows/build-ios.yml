@@ -22,7 +22,8 @@ jobs:
           npm install
           mkdir -p www
           echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
-          npx cap add ios || true
+          rm -rf ios
+          npx cap add ios
           npx cap sync ios
 
       - name: Install CocoaPods
