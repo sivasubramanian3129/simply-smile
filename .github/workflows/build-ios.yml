@@ -38,3 +38,9 @@ jobs:
                      -sdk iphonesimulator \
                      -configuration Debug \
                      build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload iOS Simulator Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Simulator-Debug
+          path: ios/App/build/Debug-iphonesimulator/App.app
