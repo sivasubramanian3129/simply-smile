@@ -2,6 +2,10 @@
 // === CONFIGURATION & STATE ===
 // ===================================================
 
+// ===================================================
+// === CONFIGURATION & STATE ===
+// ===================================================
+
 // --- 1. GLOBAL CONSTANTS ---
 // Use the CDN to bypass local file corruption issues
 const MODEL_URL = 'https://cdn.jsdelivr.net/gh/cgarciagl/face-api.js@0.22.2/weights';
@@ -11,6 +15,7 @@ const PHASE2_DURATION = 45;
 const msg = "Love your smile, come again to smile, Refresh yourself !!";
 const colors = ["#FFC90E", "#EB3324", "#B97A57", "#0023F5", "#22B14C", "#EA3680"];
 const colorfulMsg = msg.split(' ').map((word, i) => `<span style="color:${colors[i % colors.length]}; font-weight:bold;">${word}</span>`).join(' ');
+
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
@@ -24,11 +29,34 @@ const firebaseConfig = {
   measurementId: "G-ETDYY04SQ5"
 };
 
+// Initialize Firebase App and Firestore first
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Test fetch function to verify Firestore connection (Defined after 'db' is ready)
+async function verifyFirebaseConnection() {
+  try {
+    // Try fetching a dummy document to verify connectivity
+    const docRef = doc(db, "test-connection", "ping");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      console.log("Firebase connected successfully! Document data:", docSnap.data());
+    } else {
+      console.log("Firebase connected, but the test document doesn't exist yet (which is normal).");
+    }
+  } catch (error) {
+    console.error("Firebase connection error:", error);
+  }
+}
+
+// Run the verification check on load (Now safe since 'db' is initialized)
+verifyFirebaseConnection();
+
 // AdMob Configuration (Test Interstitial Unit ID)
-const ADMOB_INTERSTITIAL_ID = 'ca-app-pub-3940256099942544/1033173712'; 
+const ADMOB_INTERSTITIAL_ID = 'ca-app-pub-3072413754084144/4577154733';
+ 
+
 
 // ===================================================
 // === MULTI-LANGUAGE TRANSLATIONS ===
@@ -40,49 +68,301 @@ const translations = {
         startBtn: "🤍 Start 🤍",
         freshBtn: "Start Fresh Smile Challenge",
         powerBtn: "Start Power Smile Challenge",
-        commitmentText: "Simply SMILE wishes to give you a Fresh day with your Smile, Can you please smile"
+        commitmentText: "Simply SMILE wishes to give you a Fresh day with your Smile, Can you please smile",
+        camStarting: "📷 Starting Camera...",
+        faceLooking: "🔍 Looking for a face...",
+        sensorsWarming: "⌛ Warming up sensors...",
+        getReady: "⚠️ Get Ready... Challenge Starts!",
+        keepSmiling: "😁 Keep that smile! Time is moving!",
+        smilePrompt: "🙂 Smile to make time move!",
+        resumeSmiling: "😁 Resume Smiling!",
+        paused: "⏸️ Challenge Paused. Please choose an option.",
+        motivations: ["Smile, you look so gorgeous!", "Smile baby!", "Smile please!", "Try to be happy!"],
+        defaultQuotePhase1: "Keep Smiling!",
+        defaultQuotePhase2: "You are powerful!",
+        quitGameTitle: "Do you want to quit your smile challenge?",
+        quitGameYes: "Quit Game",
+        quitGameNo: "Try Challenge",
+        quitFreshMsg: "You were close! Do you want to restart the Fresh Smile challenge or finish?",
+        quitPowerMsg: "You were close! Do you want to try the Power Smile challenge again or finish?",
+        restartFresh: "Restart Fresh Smile",
+        restartPower: "Restart Power Smile",
+        finishBtn: "Finish",
+        startAgain: "Start Again",
+        successCongrats: "🥳 Congratulations !! 🥳",
+        finalMsg1: "Thank you for sharing your smile! Have a nice day! 👋",
+        finalMsg2: "Thank you for your Smile 😊, Your Smile adds beauty to your inner self",
+        giftExitPrompt: "Don't you need your gift? 🎁<br>Your smile deserves a reward!",
+        giftExitYes: "No, Go Home",
+        giftExitNo: "Yes, Get Gift",
+        quoteExitPrompt: "Still reading your quote? 📜<br>Do you want to leave?",
+        quoteExitYes: "Yes, Go Home",
+        quoteExitNo: "No, Read Quote",
+        chooseYourGift: "🎁 Choose Your Gift 🎁",
+        chooseFinalGift: "🎁 Choose Your Final Gift 🎁",
+        noInternetTitle: "No Internet Connection",
+        noInternetDesc: "SimplySMILE needs internet to prepare the magic. Please connect to continue!",
+        retryConnectionBtn: "I Connected! Retry 🔄",
+        challengeCompleteGift: "🥳 Challenge Complete! Get Ready for Your Gift! 🎁",
+        preparingSmiles: "Preparing Smiles... 😊",
+        tapToContinue: "Tap anywhere to continue",
+        chooseTimingTip: "Choose your timing... ⏱️",
+        keepSmilingTip: "Keep smiling! ⏳",
+        tapABoxTip: "Tap a box! 🎁",
+        tapHereToStartTip: "Tap here to start! 👇"
     },
-    es: { // Spanish
+    de: { 
         title: "Simply SMILE",
-        subtitle: "La sonrisa alarga tu vida, da paz.",
-        startBtn: "🤍 Empezar 🤍",
-        freshBtn: "Iniciar Reto Sonrisa Fresca",
-        powerBtn: "Iniciar Reto Sonrisa Poderosa",
-        commitmentText: "Simply SMILE quiere regalarte un día fresco con tu sonrisa. ¿Podrías sonreír?"
-    },
-    de: { // German
-        title: "Simply SMILE",
-        subtitle: "Lächeln verlängert das Leben, gibt Frieden.",
+        subtitle: "Ein Lächeln verlängert das Leben und schenkt Frieden.",
         startBtn: "🤍 Starten 🤍",
         freshBtn: "Frisches-Lächeln-Challenge starten",
         powerBtn: "Power-Lächeln-Challenge starten",
-        commitmentText: "Simply SMILE möchte dir mit deinem Lächeln einen frischen Tag schenken. Kannst du bitte lächeln?"
+        commitmentText: "Simply SMILE möchte dir mit einem Lächeln einen frischen Tag schenken. Möchtest du lächeln?",
+        camStarting: "📷 Kamera wird gestartet...",
+        faceLooking: "🔍 Suche nach einem Gesicht...",
+        sensorsWarming: "⌛ Sensoren wärmen sich auf...",
+        getReady: "⚠️ Mach dich bereit... Challenge beginnt!",
+        keepSmiling: "😁 Behalte das Lächeln! Die Zeit läuft!",
+        smilePrompt: "🙂 Lächle, damit die Zeit weitergeht!",
+        resumeSmiling: "😁 Lächle weiter!",
+        paused: "⏸️ Challenge pausiert. Bitte wähle eine Option.",
+        motivations: ["Lächle, du siehst großartig aus!", "Lächle mein Schatz!", "Bitte lächeln!", "Versuch glücklich zu sein!"],
+        defaultQuotePhase1: "Lächle weiter!",
+        defaultQuotePhase2: "Du bist stark!",
+        quitGameTitle: "Möchtest du deine Lächeln-Challenge abbrechen?",
+        quitGameYes: "Spiel beenden",
+        quitGameNo: "Challenge fortsetzen",
+        quitFreshMsg: "Du warst nah dran! Möchtest du die Frisches-Lächeln-Challenge neu starten oder beenden?",
+        quitPowerMsg: "Du warst nah dran! Möchtest du die Power-Lächeln-Challenge noch einmal versuchen oder beenden?",
+        restartFresh: "Frisches Lächeln neu starten",
+        restartPower: "Power Lächeln neu starten",
+        finishBtn: "Fertig",
+        startAgain: "Nochmal starten",
+        successCongrats: "🥳 Herzlichen Glückwunsch !! 🥳",
+        finalMsg1: "Danke, dass du dein Lächeln geteilt hast! Einen schönen Tag noch! 👋",
+        finalMsg2: "Danke für dein Lächeln 😊, dein Lächeln verschönert dein inneres Selbst",
+        giftExitPrompt: "Kein Geschenk gewünscht? 🎁<br>Dein Lächeln verdient eine Belohnung!",
+        giftExitYes: "Nein, nach Hause",
+        giftExitNo: "Ja, Geschenk holen",
+        quoteExitPrompt: "Liest du noch dein Zitat? 📜<br>Möchtest du gehen?",
+        quoteExitYes: "Ja, nach Hause",
+        quoteExitNo: "Nein, Zitat lesen",
+        chooseYourGift: "🎁 Wähle dein Geschenk 🎁",
+        chooseFinalGift: "🎁 Wähle dein finales Geschenk 🎁",
+        noInternetTitle: "Keine Internetverbindung",
+        noInternetDesc: "SimplySMILE benötigt Internet, um die Magie vorzubereiten. Bitte verbinde dich, um fortzufahren!",
+        retryConnectionBtn: "Verbunden! Wiederholen 🔄",
+        challengeCompleteGift: "🥳 Challenge abgeschlossen! Mach dich bereit für dein Geschenk! 🎁",
+        preparingSmiles: "Lächeln werden vorbereitet... 😊",
+        tapToContinue: "Tippe irgendwo hin, um fortzufahren",
+        chooseTimingTip: "Wähle deine Zeit... ⏱️",
+        keepSmilingTip: "Lächle weiter! ⏳",
+        tapABoxTip: "Tippe auf eine Box! 🎁",
+        tapHereToStartTip: "Hier tippen zum Starten! 👇"
     },
-    fr: { // French
+    es: { 
         title: "Simply SMILE",
-        subtitle: "Le sourire prolonge la vie, apporte la paix.",
+        subtitle: "La sonrisa alarga tu vida y da paz.",
+        startBtn: "🤍 Empezar 🤍",
+        freshBtn: "Iniciar Reto Sonrisa Fresca",
+        powerBtn: "Iniciar Reto Sonrisa Poderosa",
+        commitmentText: "Simply SMILE quiere regalarte un día fresco con tu sonrisa. ¿Podrías sonreír?",
+        camStarting: "📷 Iniciando cámara...",
+        faceLooking: "🔍 Buscando un rostro...",
+        sensorsWarming: "⌛ Calentando sensores...",
+        getReady: "⚠️ Prepárate... ¡Empieza el reto!",
+        keepSmiling: "😁 ¡Mantén esa sonrisa! ¡El tiempo avanza!",
+        smilePrompt: "🙂 ¡Sonríe para que el tiempo avance!",
+        resumeSmiling: "😁 ¡Vuelve a sonreír!",
+        paused: "⏸️ Reto pausado. Por favor elige una opción.",
+        motivations: ["¡Sonríe, te ves genial!", "¡Sonríe un poco!", "¡Sonríe por favor!", "¡Intenta ser feliz!"],
+        defaultQuotePhase1: "¡Sigue sonriendo!",
+        defaultQuotePhase2: "¡Eres increíble!",
+        quitGameTitle: "¿Quieres abandonar tu reto de sonrisa?",
+        quitGameYes: "Salir del juego",
+        quitGameNo: "Intentar reto",
+        quitFreshMsg: "¡Estuviste cerca! ¿Quieres reiniciar el reto de sonrisa fresca o terminar?",
+        quitPowerMsg: "¡Estuviste cerca! ¿Quieres intentar el reto de sonrisa poderosa de nuevo o terminar?",
+        restartFresh: "Reiniciar Sonrisa Fresca",
+        restartPower: "Reiniciar Sonrisa Poderosa",
+        finishBtn: "Terminar",
+        startAgain: "Empezar de nuevo",
+        successCongrats: "🥳 ¡¡Felicitaciones!! 🥳",
+        finalMsg1: "¡Gracias por compartir tu sonrisa! ¡Que tengas un buen día! 👋",
+        finalMsg2: "Gracias por tu sonrisa 😊, tu sonrisa embellece tu ser interior",
+        giftExitPrompt: "¿No necesitas tu regalo? 🎁<br>¡Tu sonrisa merece una recompensa!",
+        giftExitYes: "No, ir a casa",
+        giftExitNo: "Sí, obtener regalo",
+        quoteExitPrompt: "¿Aún leyendo tu frase? 📜<br>¿Quieres salir?",
+        quoteExitYes: "Sí, ir a casa",
+        quoteExitNo: "No, leer frase",
+        chooseYourGift: "🎁 Elige tu regalo 🎁",
+        chooseFinalGift: "🎁 Elige tu regalo final 🎁",
+        noInternetTitle: "Sin conexión a internet",
+        noInternetDesc: "SimplySMILE necesita internet para preparar la magia. ¡Conéctate para continuar!",
+        retryConnectionBtn: "¡Conectado! Reintentar 🔄",
+        challengeCompleteGift: "🥳 ¡Reto completado! ¡Prepárate para tu regalo! 🎁",
+        preparingSmiles: "Preparando sonrisas... 😊",
+        tapToContinue: "Toca en cualquier lugar para continuar",
+        chooseTimingTip: "Elige tu tiempo... ⏱️",
+        keepSmilingTip: "¡Sigue sonriendo! ⏳",
+        tapABoxTip: "¡Toca una caja! 🎁",
+        tapHereToStartTip: "¡Toca aquí para empezar! 👇"
+    },
+    fr: { 
+        title: "Simply SMILE",
+        subtitle: "Le sourire prolonge la vie et apporte la paix.",
         startBtn: "🤍 Commencer 🤍",
         freshBtn: "Lancer le Défi Sourire Frais",
         powerBtn: "Lancer le Défi Sourire Puissant",
-        commitmentText: "Simply SMILE souhaite vous offrir une journée fraîche grâce à votre sourire. Pourriez-vous sourire ?"
+        commitmentText: "Simply SMILE souhaite vous offrir une fraîche journée grâce à votre sourire. Pourriez-vous sourire ?",
+        camStarting: "📷 Démarrage de la caméra...",
+        faceLooking: "🔍 Recherche d'un visage...",
+        sensorsWarming: "⌛ Chauffage des capteurs...",
+        getReady: "⚠️ Préparez-vous... Le défi commence !",
+        keepSmiling: "😁 Gardez ce sourire ! Le temps avance !",
+        smilePrompt: "🙂 Souriez pour faire avancer le temps !",
+        resumeSmiling: "😁 Reprenez votre sourire !",
+        paused: "⏸️ Défi en pause. Veuillez choisir une option.",
+        motivations: ["Souriez, vous êtes splendide !", "Allez, un beau sourire !", "Souriez s'il vous plaît !", "Essayez d'être heureux !"],
+        defaultQuotePhase1: "Gardez le sourire !",
+        defaultQuotePhase2: "Vous êtes formidable !",
+        quitGameTitle: "Voulez-vous quitter votre défi souriant ?",
+        quitGameYes: "Quitter le jeu",
+        quitGameNo: "Essayer le défi",
+        quitFreshMsg: "Vous y étiez presque ! Voulez-vous recommencer le défi Sourire Frais ou terminer ?",
+        quitPowerMsg: "Vous y étiez presque ! Voulez-vous réessayer le défi Sourire Puissant ou terminer ?",
+        restartFresh: "Recommencer Sourire Frais",
+        restartPower: "Recommencer Sourire Puissant",
+        finishBtn: "Terminer",
+        startAgain: "Recommencer",
+        successCongrats: "🥳 Félicitations !! 🥳",
+        finalMsg1: "Merci d'avoir partagé votre sourire ! Passez une bonne journée ! 👋",
+        finalMsg2: "Merci pour votre sourire 😊, votre sourire embellit votre être intérieur",
+        giftExitPrompt: "Pas besoin de votre cadeau ? 🎁<br>Votre sourire mérite une récompense !",
+        giftExitYes: "Non, rentrer",
+        giftExitNo: "Oui, avoir le cadeau",
+        quoteExitPrompt: "Vous lisez encore votre citation ? 📜<br>Voulez-vous partir ?",
+        quoteExitYes: "Oui, rentrer",
+        quoteExitNo: "Non, lire la citation",
+        chooseYourGift: "🎁 Choisissez votre cadeau 🎁",
+        chooseFinalGift: "🎁 Choisissez votre cadeau final 🎁",
+        noInternetTitle: "Pas de connexion internet",
+        noInternetDesc: "SimplySMILE a besoin d'Internet pour préparer la magie. Veuillez vous connecter pour continuer !",
+        retryConnectionBtn: "Connecté ! Réessayer 🔄",
+        challengeCompleteGift: "🥳 Défi terminé ! Préparez-vous pour votre cadeau ! 🎁",
+        preparingSmiles: "Préparation des sourires... 😊",
+        tapToContinue: "Appuyez n'importe où pour continuer",
+        chooseTimingTip: "Choisissez votre temps... ⏱️",
+        keepSmilingTip: "Gardez le sourire ! ⏳",
+        tapABoxTip: "Touchez une boîte ! 🎁",
+        tapHereToStartTip: "Appuyez ici pour commencer ! 👇"
     },
-    ja: { // Japanese
+    ja: { 
         title: "Simply SMILE",
         subtitle: "笑顔は寿命を延ばし、平和をもたらします。",
         startBtn: "🤍 スタート 🤍",
         freshBtn: "フレッシュスマイルチャレンジを開始",
         powerBtn: "パワースマイルチャレンジを開始",
-        commitmentText: "Simply SMILE はあなたの笑顔で爽やかな一日をお届けしたいと思っています。笑顔をいただけますか？"
+        commitmentText: "Simply SMILEはあなたの笑顔で爽やかな一日をお届けしたいと思っています。少しだけ笑顔を見せてください！",
+        camStarting: "📷 カメラを起動中...",
+        faceLooking: "🔍 顔を探しています...",
+        sensorsWarming: "⌛ センサーを準備中...",
+        getReady: "⚠️ 準備して... チャレンジ開始！",
+        keepSmiling: "😁 その笑顔をキープ！時間が進んでいます！",
+        smilePrompt: "🙂 時間を進めるために笑顔になってね！",
+        resumeSmiling: "😁 笑顔を再開！",
+        paused: "⏸️️ チャレンジが一時停止しました。オプションを選択してください。",
+        motivations: ["笑顔がとても素敵です！", "笑って！", "笑顔をお願いします！", "ハッピーにいこう！"],
+        defaultQuotePhase1: "笑顔を続けよう！",
+        defaultQuotePhase2: "あなたは素晴らしい！",
+        quitGameTitle: "笑顔チャレンジを終了しますか？",
+        quitGameYes: "ゲームをやめる",
+        quitGameNo: "チャレンジ続行",
+        quitFreshMsg: "惜しい！フレッシュスマイルチャレンジをやり直しますか、それとも終了しますか？",
+        quitPowerMsg: "惜しい！パワースマイルチャレンジをもう一度試しますか、それとも終了しますか？",
+        restartFresh: "フレッシュスマイルをやり直す",
+        restartPower: "パワースマイルをやり直す",
+        finishBtn: "終了",
+        startAgain: "もう一度始める",
+        successCongrats: "🥳 おめでとうございます !! 🥳",
+        finalMsg1: "笑顔をシェアしていただきありがとうございます！良い一日を！ 👋",
+        finalMsg2: "素敵な笑顔をありがとう 😊、あなたの笑顔は内面の美しさを引き出します",
+        giftExitPrompt: "ギフトはいりませんか？ 🎁<br>あなたの笑顔には報酬がふさわしいです！",
+        giftExitYes: "いいえ、ホームへ",
+        giftExitNo: "はい、ギフトを受け取る",
+        quoteExitPrompt: "まだ名言を読んでいますか？ 📜<br>退出しますか？",
+        quoteExitYes: "はい、ホームへ",
+        quoteExitNo: "いいえ、名言を読む",
+        chooseYourGift: "🎁 ギフトを選んでね 🎁",
+        chooseFinalGift: "🎁 最後のギフトを選んでね 🎁",
+        noInternetTitle: "インターネット接続がありません",
+        noInternetDesc: "SimplySMILEの魔法の準備にはインターネットが必要です。接続して続けてください！",
+        retryConnectionBtn: "接続しました！再試行 🔄",
+        challengeCompleteGift: "🥳 チャレンジ完了！ギフトの準備ができました！ 🎁",
+        preparingSmiles: "笑顔を準備中... 😊",
+        tapToContinue: "画面どこでもタップして続行",
+        chooseTimingTip: "時間を選んでね... ⏱️",
+        keepSmilingTip: "笑顔をキープ！ ⏳",
+        tapABoxTip: "箱をタップしてね！ 🎁",
+        tapHereToStartTip: "ここをタップしてスタート！ 👇"
     },
-    zh: { // Chinese
+    zh: { 
         title: "Simply SMILE",
         subtitle: "微笑延年益寿，带来内心的平静。",
         startBtn: "🤍 开始 🤍",
         freshBtn: "开始清新微笑挑战",
         powerBtn: "开始能量微笑挑战",
-        commitmentText: "Simply SMILE 希望用您的微笑带给您崭新的一天，请笑一笑好吗？"
+        commitmentText: "Simply SMILE 希望用您的微笑带给您崭新的一天，请笑一笑好吗？",
+        camStarting: "📷 正在启动相机...",
+        faceLooking: "🔍 正在寻找面部...",
+        sensorsWarming: "⌛ 传感器预热中...",
+        getReady: "⚠️ 准备好... 挑战开始！",
+        keepSmiling: "😁 保持微笑！时间正在前进！",
+        smilePrompt: "🙂 微笑让时间动起来！",
+        resumeSmiling: "😁 继续微笑！",
+        paused: "⏸️ 挑战已暂停，请选择一个选项。",
+        motivations: ["笑一笑，你真好看！", "笑一个宝贝！", "请笑一笑！", "保持开心！"],
+        defaultQuotePhase1: "保持微笑！",
+        defaultQuotePhase2: "你充满力量！",
+        quitGameTitle: "您想退出微笑挑战吗？",
+        quitGameYes: "退出游戏",
+        quitGameNo: "尝试挑战",
+        quitFreshMsg: "差一点就成功了！您想重新开始清新微笑挑战还是结束？",
+        quitPowerMsg: "差一点就成功了！您想再次尝试能量微笑挑战还是结束？",
+        restartFresh: "重新开始清新微笑",
+        restartPower: "重新开始能量微笑",
+        finishBtn: "完成",
+        startAgain: "再玩一次",
+        successCongrats: "🥳 恭喜 !! 🥳",
+        finalMsg1: "感谢您分享您的微笑！祝您有美好的一天！ 👋",
+        finalMsg2: "谢谢您的微笑 😊，您的微笑为您的内心增添了美丽",
+        giftExitPrompt: "不需要您的礼物吗？ 🎁<br>您的微笑值得拥有奖励！",
+        giftExitYes: "不，回主页",
+        giftExitNo: "是的，领取礼物",
+        quoteExitPrompt: "还在阅读名言吗？ 📜<br>您想离开吗？",
+        quoteExitYes: "是的，回主页",
+        quoteExitNo: "不，继续阅读",
+        chooseYourGift: "🎁 请选择您的礼物 🎁",
+        chooseFinalGift: "🎁 请选择您的最终礼物 🎁",
+        noInternetTitle: "没有网络连接",
+        noInternetDesc: "SimplySMILE 需要联网来准备魔法。请连接网络后继续！",
+        retryConnectionBtn: "已连接！重试 🔄",
+        challengeCompleteGift: "🥳 挑战完成！准备领取您的礼物吧！ 🎁",
+        preparingSmiles: "正在准备微笑... 😊",
+        tapToContinue: "点击任意处继续",
+        chooseTimingTip: "选择你的时间... ⏱️",
+        keepSmilingTip: "保持微笑！ ⏳",
+        tapABoxTip: "点击一个盒子！ 🎁",
+        tapHereToStartTip: "点击这里开始！ 👇"
     }
 };
+
+function getTranslation(key) {
+    const currentLang = localStorage.getItem('preferred_lang') || 'en';
+    return translations[currentLang]?.[key] || translations['en'][key];
+}
+window.getTranslation = getTranslation;
 
 function setLanguage(lang) {
     const selectedLang = translations[lang] ? lang : 'en';
@@ -99,6 +379,14 @@ function setLanguage(lang) {
 
     // 2. Instantly update dynamic screens if they are currently visible
     const t = translations[selectedLang];
+
+    // Update Intro Screen if visible
+    const introTitle = document.querySelector('#intro h1');
+    const introSubtitle = document.querySelector('#intro p');
+    const introStartBtn = document.getElementById('startBtn');
+    if (introTitle) introTitle.innerText = t.title;
+    if (introSubtitle) introSubtitle.innerText = t.subtitle;
+    if (introStartBtn) introStartBtn.innerText = t.startBtn;
 
     // Update Commitment / Challenge Selection Screen if it's open
     const signboardCommitment = document.getElementById('signboardTextCommitment');
@@ -120,6 +408,12 @@ function setLanguage(lang) {
         if (titleEl) titleEl.innerText = t.title;
         if (subtitleEl) subtitleEl.innerText = t.subtitle;
     }
+
+   // Update Gift screen headers using their exact IDs
+    const giftTitle1 = document.getElementById('gift-title-1');
+    const giftTitle2 = document.getElementById('gift-title-2');
+    if (giftTitle1) giftTitle1.innerText = t.chooseYourGift;
+    if (giftTitle2) giftTitle2.innerText = t.chooseFinalGift;
 }
 
 // --- 2. GLOBAL VARIABLES ---
@@ -161,15 +455,13 @@ async function initializeAdMob() {
         const { AdMob } = window.Capacitor.Plugins;
         try {
             await AdMob.initialize({
-                initializeForTesting: false, // Set to false before production release
+                initializeForTesting: false, 
             });
             isAdMobAvailable = true;
-            console.log("✅ AdMob initialized successfully");
             
-            // Register event listeners
             AdMob.addListener('interstitialAdDismissed', () => {
                 isInterstitialLoaded = false;
-                preloadInterstitialAd(); // Automatically preload the next ad
+                preloadInterstitialAd(); 
             });
 
             AdMob.addListener('interstitialAdFailedToLoad', (err) => {
@@ -179,10 +471,8 @@ async function initializeAdMob() {
 
             AdMob.addListener('interstitialAdLoaded', () => {
                 isInterstitialLoaded = true;
-                console.log("✅ Interstitial Ad loaded and ready");
             });
 
-            // Preload the first interstitial ad
             preloadInterstitialAd();
         } catch (e) {
             console.error("AdMob initialization failed:", e);
@@ -195,8 +485,8 @@ async function preloadInterstitialAd() {
     try {
         const { AdMob } = window.Capacitor.Plugins;
         await AdMob.prepareInterstitial({
-            adId: ADMOB_INTERSTITIAL_ID, // ✅ Uses global constant
-            isTesting: true // Set to false before production release
+            adId: ADMOB_INTERSTITIAL_ID, 
+            isTesting: false // Change to false to stop serving test ads
         });
     } catch (e) {
         console.warn("Failed to prepare interstitial ad:", e);
@@ -255,13 +545,11 @@ function clearAllIntervals() {
 
 function checkInternetConnection() {
     if (navigator.onLine) {
-        // Internet is Good
         if (internetErrorEl) internetErrorEl.classList.add("hidden");
         return true;
     } else {
-        // No Internet
         if (internetErrorEl) internetErrorEl.classList.remove("hidden");
-        if (loader) loader.classList.add("hidden"); // Hide spinner so they see the error
+        if (loader) loader.classList.add("hidden"); 
         return false;
     }
 }
@@ -272,14 +560,11 @@ function checkInternetConnection() {
 // ===================================================
 
 async function loadAll() {
-    
-    if (!checkInternetConnection()) return; // Stop if offline
+    if (!checkInternetConnection()) return; 
     if (!statusEl) console.warn("Status element not ready yet.");
   
-    // Load Quotes from Firebase Firestore
     if (quotesPhase1.length === 0) {
         try {
-            // Use the globally imported doc and getDoc functions directly
             const docRefPhase1 = doc(db, "game_phases", "phase1");
             const docSnapPhase1 = await getDoc(docRefPhase1);
             
@@ -297,8 +582,6 @@ async function loadAll() {
                 const data2 = JSON.parse(rawData2);
                 quotesPhase2 = data2.phase2_content;
             }
-
-            console.log(`Loaded ${quotesPhase1.length} quotes from Firestore.`);
         } catch (error) {
             console.error("Failed to load quotes from Firestore:", error);
         }
@@ -310,8 +593,6 @@ async function loadAll() {
     }
 
     try {
-        console.log("Attempting to load models from CDN:", MODEL_URL);
-
         await Promise.all([ 
             faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
             faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
@@ -319,11 +600,8 @@ async function loadAll() {
         ]);
     
         modelsLoaded = true;
-        console.log("✅ All models loaded successfully from CDN");
-
         if (loader) loader.classList.add("hidden"); 
         
-        // Enable buttons if they are currently on screen
         const freshBtn = document.getElementById('freshSmileBtn');
         const powerBtn = document.getElementById('powerSmileBtn');
         if (freshBtn) freshBtn.disabled = false;
@@ -333,7 +611,6 @@ async function loadAll() {
         console.error("Model loading failed:", error);
         if (internetErrorEl) internetErrorEl.classList.add("hidden"); 
         if (loader) loader.classList.add("hidden");
-        
         if(statusEl) statusEl.textContent = "❌ Network Error: " + error.message; 
     }
 }
@@ -348,12 +625,11 @@ async function startVideo() {
     if (videoSection) videoSection.classList.add("hidden"); 
 
     try {
-        // ✅ Optimized: Restrict resolution to 640x480 for mobile performance
         const newStream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 width: { ideal: 640 }, 
                 height: { ideal: 480 },
-                facingMode: "user" // Ensures front camera on mobile
+                facingMode: "user" 
             } 
         });
         
@@ -406,8 +682,8 @@ function quitGame(statusMessage, includeRestartOptions = true) {
                 <div id="signboardText" style="position: absolute; top: 45%; left: 53%; transform: translate(-50%, -50%); width: 80%; padding-top: 25px; text-align: center; color: var(--text-title); font-size: 1.0rem; font-weight: 700;">
                     ${statusMessage}
                     <div id="finalActions" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                        <button id="startAgainFinalBtn" class="btn action-positive">Start Again</button>
-                        <button id="finishBtn" class="btn action-negative">Finish</button>
+                        <button id="startAgainFinalBtn" class="btn action-positive">${getTranslation('startAgain')}</button>
+                        <button id="finishBtn" class="btn action-negative">${getTranslation('finishBtn')}</button>
                     </div>
                 </div>
             </div>`;
@@ -466,12 +742,12 @@ function handleQuit() {
     let statusMessage, continueText, continueAction;
 
     if (currentPhase === 1) {
-        statusMessage = "You were close! Do you want to restart the Fresh Smile challenge or finish?";
-        continueText = "Restart Fresh Smile";
+        statusMessage = getTranslation('quitFreshMsg');
+        continueText = getTranslation('restartFresh');
         continueAction = () => startChallenge(PHASE1_DURATION, 1, true); 
     } else {
-        statusMessage = "You were close! Do you want to try the Power Smile challenge again or finish?";
-        continueText = "Restart Power Smile";
+        statusMessage = getTranslation('quitPowerMsg');
+        continueText = getTranslation('restartPower');
         continueAction = () => startChallenge(PHASE2_DURATION, 2, true); 
     }
     
@@ -484,14 +760,75 @@ function handleQuit() {
                 <div style="font-size: 1rem; margin-bottom: 15px; line-height: 1.2;">${statusMessage}</div>
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 5px;">
                     <button id="dynamicContinueBtn" class="btn action-positive" style="font-size: 0.9rem; padding: 8px 16px;">${continueText}</button>
-                    <button id="finalFinishBtn" class="btn action-negative" style="font-size: 0.9rem; padding: 8px 16px;">Finish</button>
+                    <button id="finalFinishBtn" class="btn action-negative" style="font-size: 0.9rem; padding: 8px 16px;">${getTranslation('finishBtn')}</button>
                 </div>
             </div>
         </div>`;
     actionsEl.classList.remove("hidden");
 
-   document.getElementById('dynamicContinueBtn').onclick = continueAction;
-   document.getElementById('finalFinishBtn').onclick = () => quitGame(colorfulMsg, false); 
+    document.getElementById('dynamicContinueBtn').onclick = continueAction;
+    document.getElementById('finalFinishBtn').onclick = () => quitGame(colorfulMsg, false); 
+}
+
+async function fetchRandomQuote(phase) {
+    const currentLang = localStorage.getItem('preferred_lang') || 'en';
+    
+    if (!navigator.onLine) {
+        return getTranslation(phase === 1 ? 'defaultQuotePhase1' : 'defaultQuotePhase2');
+    }
+
+    try {
+        const docRef = doc(db, "game_phases", `phase${phase}_${currentLang}`);
+        let docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists()) {
+            const fallbackRef = doc(db, "game_phases", `phase${phase}`);
+            docSnap = await getDoc(fallbackRef);
+        }
+        
+        if (docSnap.exists()) {
+            const docData = docSnap.data();
+            let quotesList = [];
+
+            if (docData.data) {
+                const parsed = typeof docData.data === 'string' ? JSON.parse(docData.data) : docData.data;
+                quotesList = parsed[`phase${phase}_content`] || parsed;
+            } else if (docData[`phase${phase}_content`]) {
+                quotesList = docData[`phase${phase}_content`];
+            } else if (Array.isArray(docData)) {
+                quotesList = docData;
+            }
+
+            if (Array.isArray(quotesList) && quotesList.length > 0) {
+                const randomIndex = Math.floor(Math.random() * quotesList.length);
+                const item = quotesList[randomIndex];
+                
+                let text = "";
+                if (typeof item === 'object' && item !== null) {
+                    text = item[currentLang] || item['en'] || item.text || item.quote || "";
+                } else {
+                    text = typeof item === 'string' ? item : (item.text || item.quote);
+                }
+
+                // --- FIX: Remove any duplicate parenthetical prompts embedded in the database text ---
+                if (text) {
+                    text = text.replace(/\(Tap anywhere to continue\)/gi, '')
+                               .replace(/\(Tippe irgendwo hin.*?\)/gi, '')
+                               .replace(/\(Toca en cualquier lugar.*?\)/gi, '')
+                               .replace(/\(Appuyez n'importe où.*?\)/gi, '')
+                               .replace(/\(画面どこでも.*?\)/gi, '')
+                               .replace(/\(点击.*?\)/gi, '')
+                               .trim();
+                }
+
+                return text;
+            }
+        }
+    } catch (error) {
+        console.warn("Failed to fetch random quote from Firestore:", error);
+    }
+    
+    return getTranslation(phase === 1 ? 'defaultQuotePhase1' : 'defaultQuotePhase2');
 }
 
 function attachGiftListeners() {
@@ -501,32 +838,25 @@ function attachGiftListeners() {
     });
 
     document.querySelectorAll(".gift").forEach(gift => {
-      gift.addEventListener("click", function(e) {
+      gift.addEventListener("click", async function(e) {
         const target = e.currentTarget;
         const phase = parseInt(target.dataset.phase);
 
         document.getElementById(`gifts${phase}`).classList.add("hidden");
         
-        let fortuneText;
+        // Fetch quote dynamically from Firebase
+        let fortuneText = await fetchRandomQuote(phase);
+
         if (phase === 1) {
-          if (!quotesPhase1 || quotesPhase1.length === 0) fortuneText = "Keep Smiling!";
-          else {
-              const quoteObj = quotesPhase1[Math.floor(Math.random() * quotesPhase1.length)];
-              fortuneText = quoteObj.text; 
-          }
           actionsEl.classList.remove("hidden");
         } else { 
-          if (!quotesPhase2 || quotesPhase2.length === 0) fortuneText = "You are powerful!";
-          else {
-              const quoteObj = quotesPhase2[Math.floor(Math.random() * quotesPhase2.length)];
-              fortuneText = quoteObj.text; 
-          }
           actionsEl.classList.add("hidden"); 
         }
 
         let formattedText = fortuneText.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
 
-        fortuneMessage.innerHTML = formattedText;
+        // --- RENDERED ONCE HERE ---
+        fortuneMessage.innerHTML = `${formattedText}<br><br><span style="font-size: 0.8rem; opacity: 0.7; font-style: normal;">${getTranslation('tapToContinue')}</span>`;
         fortuneDiv.classList.remove("hidden"); 
         
         setTimeout(() => { fortuneReadyToDismiss = true; }, 2000);
@@ -543,19 +873,16 @@ async function startChallenge(duration, phase, isResume = false) {
   stopFloatingEmojis();
 
   if (actionsEl) actionsEl.classList.add("hidden"); 
-
   if (statusEl) statusEl.classList.add("hidden");
   if (motivationEl) motivationEl.classList.add("hidden");
   
   clearAllIntervals();
 
-if (!isResume) {
-      if (loader) loader.classList.add("hidden");
+  if (!isResume) {
+      if (loader) loader.classList.remove("hidden");
       if (dynamicAppContent) dynamicAppContent.classList.add("hidden");
       
-      // ✅ Get active language translations dynamically so titles match instantly
-      const currentLang = localStorage.getItem('preferred_lang') || 'en';
-      const t = translations[currentLang] || translations['en'];
+      const t = translations[localStorage.getItem('preferred_lang') || 'en'] || translations['en'];
 
       dynamicAppContent.innerHTML = `
             <div id="app-title-frame" class="title-frame">
@@ -588,6 +915,7 @@ if (!isResume) {
   isChallengeRunning = true;
   nonSmileTimer = 0; 
   smileActive = false; 
+  isGiftExitMode = false;
 
   statusEl.style.backgroundColor = ""; 
   statusEl.style.color = "";
@@ -595,13 +923,13 @@ if (!isResume) {
   if (timerEl) timerEl.textContent = `${formatTime(remaining)}`; 
 
   if (!isResume) {
-      statusEl.textContent = "📷 Starting Camera...";
+      statusEl.textContent = getTranslation('camStarting');
       try {
         await startVideo(); 
         if (loader) loader.classList.add("hidden"); 
         dynamicAppContent.classList.remove("hidden"); 
         statusEl.classList.remove("hidden");
-        statusEl.textContent = "🔍 Looking for a face...";
+        statusEl.textContent = getTranslation('faceLooking');
       } catch(e) {
         isChallengeRunning = false;
         if (actionsEl) actionsEl.classList.remove("hidden");
@@ -611,19 +939,18 @@ if (!isResume) {
         return;
       }
   } else {
-      statusEl.textContent = "😁 Resume Smiling!";
+      statusEl.textContent = getTranslation('resumeSmiling');
   }
   
   let lastSmileTimestamp = 0; 
   let gameReady = isResume;      
   let preparingGame = isResume;  
 
-  // 1. DETECTION LOOP
   detectionInterval = setInterval(async () => {
     if (!isChallengeRunning) return; 
 
     if (!modelsLoaded || !video || video.readyState < 2) {
-        if(!isResume) statusEl.textContent = "⌛ Warming up sensors...";
+        if(!isResume) statusEl.textContent = getTranslation('sensorsWarming');
         return; 
     }
     
@@ -640,7 +967,7 @@ if (!isResume) {
         if (!gameReady && !preparingGame) {
             preparingGame = true; 
 
-            statusEl.textContent = "⚠️ Get Ready... Challenge Starts!";
+            statusEl.textContent = getTranslation('getReady');
             statusEl.style.backgroundColor = "#FFC90E"; 
             statusEl.style.color = "#000000";
             statusEl.style.fontWeight = "bold";
@@ -661,7 +988,7 @@ if (!isResume) {
                 smileActive = true;
                 lastSmileTimestamp = Date.now(); 
                 
-                statusEl.textContent = `😁 Keep that smile! Time is moving!`;
+                statusEl.textContent = getTranslation('keepSmiling');
                 statusEl.classList.remove("hidden");
                 motivationEl.classList.add("hidden");
             } else {
@@ -671,12 +998,13 @@ if (!isResume) {
     } 
     
     if (gameReady && Date.now() - lastSmileTimestamp > 1000 && isChallengeRunning) {
-         statusEl.textContent = "🙂 Smile to make time move!";
+         statusEl.textContent = getTranslation('smilePrompt');
          statusEl.classList.add("hidden");
          motivationEl.classList.remove("hidden");
          
          if (Math.random() > 0.95) {
-             const phrases = ["Smile, you look so gorgeous!", "Smile baby!", "Smile please!", "Try to be happy!"];
+             const t = translations[localStorage.getItem('preferred_lang') || 'en'] || translations['en'];
+             const phrases = t.motivations;
              motivationEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
          }
     }
@@ -684,7 +1012,6 @@ if (!isResume) {
 
   quitPromptInterval = setInterval(checkNonSmileTimeout, 1000);
 
-  // 2. TIMER LOOP
   let smileAccumulator = 0; 
   let lastTick = Date.now(); 
 
@@ -721,7 +1048,13 @@ function checkNonSmileTimeout() {
     
     if (nonSmileTimer >= 10) {
         clearAllIntervals(); 
-        statusEl.textContent = "⏸️ Challenge Paused. Please choose an option.";
+        isGiftExitMode = false;
+
+        document.querySelector("#quitPrompt-box h3").textContent = getTranslation('quitGameTitle');
+        quitYesBtn.textContent = getTranslation('quitGameYes');
+        quitNoBtn.textContent = getTranslation('quitGameNo');
+
+        statusEl.textContent = getTranslation('paused');
         motivationEl.classList.add('hidden');
         quitPrompt.classList.remove("hidden"); 
     }
@@ -732,13 +1065,11 @@ function completeChallenge() {
     isChallengeRunning = false;
     stopVideo();
 
-// ✅ Safe check before accessing classList
-document.getElementById('timer')?.classList.add("hidden"); 
-document.getElementById('motivation')?.classList.add("hidden"); 
-document.getElementById('quitPrompt')?.classList.add("hidden"); 
-document.querySelector('#app-title-frame')?.classList.add("hidden");
+    document.getElementById('timer')?.classList.add("hidden"); 
+    document.getElementById('motivation')?.classList.add("hidden"); 
+    document.getElementById('quitPrompt')?.classList.add("hidden"); 
+    document.querySelector('#app-title-frame')?.classList.add("hidden");
 
-    // Display AdMob Interstitial Ad on completion
     showInterstitialAd();
 
     if (currentPhase === 1) {
@@ -749,18 +1080,24 @@ document.querySelector('#app-title-frame')?.classList.add("hidden");
 }
 
 function onOneMinuteChallengeSuccess() {
-   document.querySelector('#app-title-frame')?.classList.add("hidden");
-document.getElementById("actions")?.classList.add("hidden");
-document.getElementById('status')?.classList.add("hidden");
+    document.querySelector('#app-title-frame')?.classList.add("hidden");
+    document.getElementById("actions")?.classList.add("hidden");
+    document.getElementById('status')?.classList.add("hidden");
     const gifContainer = document.getElementById('interstitialGif');
     gifContainer.style.display = 'block';
     
-    updateStatus("🥳 Congratulations !! 🥳");
+    updateStatus(getTranslation('challengeCompleteGift'));
     statusEl.classList.remove("hidden");
 
     setTimeout(() => {
         gifContainer.style.display = 'none';
-        document.getElementById('gifts1').classList.remove("hidden");
+        const gifts1El = document.getElementById('gifts1');
+        gifts1El.classList.remove("hidden");
+        
+        // FIX: Target h3 or the specific ID instead of h2
+        const giftTitle1 = document.getElementById('gift-title-1');
+        if (giftTitle1) giftTitle1.innerText = getTranslation('chooseYourGift');
+        
         attachGiftListeners(); 
         statusEl.classList.add("hidden"); 
     }, 6500); 
@@ -768,17 +1105,23 @@ document.getElementById('status')?.classList.add("hidden");
 
 function onThreeMinuteChallengeSuccess() { 
     document.querySelector('#app-title-frame')?.classList.add("hidden");
-document.getElementById("actions")?.classList.add("hidden");
-document.getElementById('status')?.classList.add("hidden"); 
+    document.getElementById("actions")?.classList.add("hidden");
+    document.getElementById('status')?.classList.add("hidden"); 
     const gifContainer = document.getElementById('interstitialGif');
     gifContainer.style.display = 'block';
     
-    updateStatus("🥳 Congratulations !! 🥳");
+    updateStatus(getTranslation('challengeCompleteGift'));
     statusEl.classList.remove("hidden");
 
     setTimeout(() => {
         gifContainer.style.display = 'none';
-        document.getElementById('gifts2').classList.remove("hidden");
+        const gifts2El = document.getElementById('gifts2');
+        gifts2El.classList.remove("hidden");
+        
+        // FIX: Target h3 or the specific ID instead of h2
+        const giftTitle2 = document.getElementById('gift-title-2');
+        if (giftTitle2) giftTitle2.innerText = getTranslation('chooseFinalGift');
+        
         attachGiftListeners(); 
         statusEl.classList.add("hidden"); 
     }, 6500); 
@@ -789,7 +1132,6 @@ document.getElementById('status')?.classList.add("hidden");
 // ===================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-
     welcomeScreen = document.getElementById("intro");
     mainApp = document.getElementById("app");
     dynamicAppContent = document.getElementById("dynamicAppContent");
@@ -813,13 +1155,12 @@ document.addEventListener('DOMContentLoaded', () => {
     finalScreen = document.getElementById("final");
     internetErrorEl = document.getElementById("internetError");
     retryConnectionBtn = document.getElementById("retryConnectionBtn");
+    
     const savedLang = localStorage.getItem('preferred_lang') || navigator.language.slice(0, 2);
     setLanguage(savedLang);
 
-    // Initialize AdMob Plugin
     initializeAdMob();
 
-    // Floating Emojis
     for (let i = 0; i < 5; i++) { createFloatingEmoji(); }
     emojiInterval = setInterval(createFloatingEmoji, 1500);
     
@@ -847,46 +1188,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (startBtn) {
         startBtn.addEventListener("click", () => {
-    welcomeScreen.classList.add("hidden");
-    mainApp.classList.remove("hidden");
-    
-    const titleFrame = document.querySelector('#app-title-frame');
-    if (titleFrame) titleFrame.classList.add("hidden");
-    if(statusEl) statusEl.classList.add("hidden"); 
+            welcomeScreen.classList.add("hidden");
+            mainApp.classList.remove("hidden");
+            
+            const titleFrame = document.querySelector('#app-title-frame');
+            if (titleFrame) titleFrame.classList.add("hidden");
+            if(statusEl) statusEl.classList.add("hidden"); 
 
-    // ✅ Get the currently active language
-    const currentLang = localStorage.getItem('preferred_lang') || 'en';
-    const t = translations[currentLang] || translations['en'];
+            const t = translations[localStorage.getItem('preferred_lang') || 'en'] || translations['en'];
 
-    dynamicAppContent.innerHTML = `
-        <div id="commitmentContainer" style="max-width: 340px; width: 90%; margin: 30px auto; position: relative;">
-            <img src="images/smiley_questionbox.png" alt="Smiley character with whiteboard" style="width: 100%; height: auto; display: block;">
-            <div id="signboardTextCommitment" style="position: absolute; top: 15%; left: 10%; width: 85%; text-align: center; color: var(--text-title); font-size: 1rem; font-weight: 700;">
-                <div style="font-size: 1rem; margin-bottom: 15px; line-height: 1.3;">
-                    ${t.commitmentText}
-                </div>
-                
-                <div id="duration-container" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                    <button id="freshSmileBtn" class="btn action-positive" style="font-size: 0.9rem; padding: 8px 16px;">${t.freshBtn}</button>
-                    <button id="powerSmileBtn" class="btn action-positive" style="font-size: 0.9rem; padding: 8px 16px;">${t.powerBtn}</button>
-                </div>
+            dynamicAppContent.innerHTML = `
+                <div id="commitmentContainer" style="max-width: 340px; width: 90%; margin: 30px auto; position: relative;">
+                    <img src="images/smiley_questionbox.png" alt="Smiley character with whiteboard" style="width: 100%; height: auto; display: block;">
+                    <div id="signboardTextCommitment" style="position: absolute; top: 15%; left: 10%; width: 85%; text-align: center; color: var(--text-title); font-size: 1rem; font-weight: 700;">
+                        <div style="font-size: 1rem; margin-bottom: 15px; line-height: 1.3;">
+                            ${t.commitmentText}
+                        </div>
+                        
+                        <div id="duration-container" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <button id="freshSmileBtn" class="btn action-positive" style="font-size: 0.9rem; padding: 8px 16px;">${t.freshBtn}</button>
+                            <button id="powerSmileBtn" class="btn action-positive" style="font-size: 0.9rem; padding: 8px 16px;">${t.powerBtn}</button>
+                        </div>
 
-            </div>
-        </div>`;
-    
-    const freshBtn = document.getElementById('freshSmileBtn');
-    const powerBtn = document.getElementById('powerSmileBtn');
+                    </div>
+                </div>`;
+            
+            const freshBtn = document.getElementById('freshSmileBtn');
+            const powerBtn = document.getElementById('powerSmileBtn');
 
-    if (freshBtn) {
-        freshBtn.disabled = !modelsLoaded;
-        freshBtn.onclick = () => startChallenge(PHASE1_DURATION, 1);
+            if (freshBtn) {
+                freshBtn.disabled = !modelsLoaded;
+                freshBtn.onclick = () => startChallenge(PHASE1_DURATION, 1);
+            }
+            if (powerBtn) {
+                powerBtn.disabled = !modelsLoaded;
+                powerBtn.onclick = () => startChallenge(PHASE2_DURATION, 2);
+            }
+        });
     }
-    if (powerBtn) {
-        powerBtn.disabled = !modelsLoaded;
-        powerBtn.onclick = () => startChallenge(PHASE2_DURATION, 2);
-    }
-});
-}
+
     const hardResetBtn = document.getElementById("hardResetBtn");
     if (hardResetBtn) {
         hardResetBtn.addEventListener("click", () => {
@@ -924,16 +1264,14 @@ document.addEventListener('DOMContentLoaded', () => {
             fortuneReadyToDismiss = false; 
             if (currentPhase === 1) {
                 document.getElementById('gifts1').classList.add("hidden");  
-                quitGame("Thank you for sharing your smile! Have a nice day! 👋", true);
-            }
-            else {
+                quitGame(getTranslation('finalMsg1'), true);
+            } else {
                 document.getElementById('gifts2').classList.add("hidden"); 
-                quitGame("Thank you for your Smile 😊, Your Smile adds beauty to your inner self", true);
+                quitGame(getTranslation('finalMsg2'), true);
             }
         }
     });
 
-    // Back Button Handler
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
         const App = window.Capacitor.Plugins.App;
 
@@ -947,11 +1285,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 isGiftExitMode = false;
                 clearAllIntervals();
                 
-                document.querySelector("#quitPrompt-box h3").textContent = "Do you want to quit your smile challenge?";
-                quitYesBtn.textContent = "Quit Game";
-                quitNoBtn.textContent = "Try Challenge";
+                document.querySelector("#quitPrompt-box h3").textContent = getTranslation('quitGameTitle');
+                quitYesBtn.textContent = getTranslation('quitGameYes');
+                quitNoBtn.textContent = getTranslation('quitGameNo');
 
-                statusEl.textContent = "⏸️ Paused";
+                statusEl.textContent = getTranslation('paused');
                 statusEl.classList.remove("hidden");
                 motivationEl.classList.add('hidden');
                 quitPrompt.classList.remove("hidden");
@@ -967,13 +1305,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 isGiftExitMode = true; 
 
                 if (fortuneVisible) {
-                     document.querySelector("#quitPrompt-box h3").innerHTML = "Still reading your quote? 📜<br>Do you want to leave?";
-                     quitYesBtn.textContent = "Yes, Go Home";   
-                     quitNoBtn.textContent = "No, Read Quote";  
+                     document.querySelector("#quitPrompt-box h3").innerHTML = getTranslation('quoteExitPrompt');
+                     quitYesBtn.textContent = getTranslation('quoteExitYes');   
+                     quitNoBtn.textContent = getTranslation('quoteExitNo');  
                 } else {
-                     document.querySelector("#quitPrompt-box h3").innerHTML = "Don't you need your gift? 🎁<br>Your smile deserves a reward!";
-                     quitYesBtn.textContent = "No, Go Home";    
-                     quitNoBtn.textContent = "Yes, Get Gift";   
+                     document.querySelector("#quitPrompt-box h3").innerHTML = getTranslation('giftExitPrompt');
+                     quitYesBtn.textContent = getTranslation('giftExitYes');    
+                     quitNoBtn.textContent = getTranslation('giftExitNo');   
                 }
 
                 quitPrompt.classList.remove("hidden");

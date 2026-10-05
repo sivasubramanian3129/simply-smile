@@ -337,27 +337,32 @@ margin-bottom: -40px;
   z-index: 10; 
 }
 
+
 /* Screen 3: Challenge */
 #app {
   max-width: 600px;
   width: 100%;
-  position: relative; /* <-- ADD THIS */
+  position: relative; 
 }
 
 #videoSection {
   max-width: 400px;
+  width: 100%;                  /* Ensures it scales correctly */
+  min-height: 300px;            /* 👈 Prevents height from collapsing to 0 */
   margin: 20px auto 10px auto;
   position: relative;
   overflow: hidden;
-  border: 3px solid var(--bg-light-grey); /* Light grey border */
+  border: 3px solid var(--bg-light-grey); 
   border-radius: 12px;
 }
 
 video {
   width: 100%; 
   height: auto;
+  min-height: 300px;            /* 👈 Matches container fallback */
+  object-fit: cover;            /* 👈 Keeps video aspect ratio safe */
   border: none;
-  border-radius: 12px; /* <-- CHANGE THIS */
+  border-radius: 12px; 
 }
 
 /* Timer */
@@ -438,16 +443,6 @@ video {
     font-weight: 500;
     margin: 0;
     font-family: sans-serif;
-}
-
-/* Add a visual cue at the bottom */
-#fortune-box::after {
-    content: "(Tap anywhere to continue)";
-    display: block;
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #888;
-    font-style: italic;
 }
 
 /* Style for the starting emoji */
