@@ -21,7 +21,7 @@ jobs:
         run: |
           npm install
           mkdir -p www
-          echo "<!DOCTYPE html><html><body><h1>Simply Smile</h1></body></html>" > www/index.html
+          npm run build
           rm -rf ios
           npx cap add ios --packagemanager CocoaPods
           npx cap sync ios
